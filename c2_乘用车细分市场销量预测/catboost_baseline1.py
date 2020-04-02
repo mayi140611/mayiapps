@@ -1,4 +1,9 @@
+"""
+训练5000个周期，线上得分0.16956440000 
+"""
+
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 df_sales = pd.read_csv('data_origin/train/train_sales_data.csv')
@@ -27,20 +32,22 @@ del X_train['regYear'], X_test['regYear']
 
 from sklearn.preprocessing import StandardScaler
 
-scaler = StandardScaler().fit(X_train['popularity carCommentVolum newsReplyVolum'.split()])
+# scaler = StandardScaler().fit(X_train['popularity carCommentVolum newsReplyVolum'.split()])
+# X_train.loc[:, 'popularity carCommentVolum newsReplyVolum'.split()] = scaler.transform(X_train['popularity carCommentVolum newsReplyVolum'.split()])
 
-X_test.loc[:, 'popularity carCommentVolum newsReplyVolum'.split()] = scaler.transform(X_test['popularity carCommentVolum newsReplyVolum'.split()])
+# X_test.loc[:, 'popularity carCommentVolum newsReplyVolum'.split()] = scaler.transform(X_test['popularity carCommentVolum newsReplyVolum'.split()])
+
 
 cat_cols = ['province', 'model', 'bodyType', 'regMonth']
 
 from catboost import CatBoostRegressor
 
 model = CatBoostRegressor(
-#     iterations=5000,
+    iterations=5000,
 #     learning_rate=
 )
 
-model.fit(X_train, y_train, cat_features=cat_cols, eval_set=(X_test, y_test), plot=True)
+model.fit(X_train, np.log(y_train+1), cat_features=cat_cols, eval_set=(X_test, np.log(y_test+1)), plot=True)
 
 model.feature_importances_
 
@@ -60,14 +67,14 @@ dfg = df.groupby('model regMonth'.split())[['popularity', 'carCommentVolum', 'ne
 
 df_test = pd.merge(df_test, dfg, left_on='model regMonth'.split(), right_index=True, how='left')
 
-df_test.loc[:, 'popularity carCommentVolum newsReplyVolum'.split()] = scaler.transform(df_test['popularity carCommentVolum newsReplyVolum'.split()])
+# df_test.loc[:, 'popularity carCommentVolum newsReplyVolum'.split()] = scaler.transform(df_test['popularity carCommentVolum newsReplyVolum'.split()])
 
-df_test.loc[:, 'forecastVolum'] = model.predict(df_test[['province', 'bodyType', 'model', 'regMonth', 'popularity', 'carCommentVolum', 'newsReplyVolum']])
+df_test.loc[:, 'forecastVolum'] = np.exp(model.predict(df_test[['province', 'bodyType', 'model', 'regMonth', 'popularity', 'carCommentVolum', 'newsReplyVolum']])) - 1
 df_test.loc[:, 'forecastVolum'] = df_test.forecastVolum.map(round)
 
 
 df_test.loc[df_test.forecastVolum<0, 'forecastVolum']=2
 
-df_test[['id','forecastVolum']].sort_values('id').to_csv('data_gen/baseline_catboost2.csv', index=False)
+df_test[['id','forecastVolum']].sort_values('id').to_csv('/Users/luoyonggui/Downloads/baseline_catboost2.csv', index=False)
 
 print('complete!')
