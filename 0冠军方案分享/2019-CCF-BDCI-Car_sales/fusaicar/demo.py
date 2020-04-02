@@ -134,7 +134,7 @@ def get_stat_feature(df_,month):
     '月份'
     count_month = [31,28,31,30,31,30,31,31,30,31,30,31]
     data['count_month'] = list(map(lambda x:count_month[int(x-1)],data['month_id']))
-    jiaqibiao = [[11,12,8,10,10,9,10,8,9,13,8,9],[12,9,8,11,10,8,10,8,8,14,8,10],[9,11,9,11]]
+    jiaqibiao = [[11,12,8,10,10,9,10,8,9,13,8,9],[12,9,8,11,10,8,10,8,8,14,8,10],[9,11,9,11]]  # 好像是每个月假期天数
     data['count_jiaqi'] = list(map(lambda x,y:jiaqibiao[int(x-2016)][int(y-1)],data['sales_year'],data['month_id']))
     stat_feat.append('count_month')
     stat_feat.append('count_jiaqi')
