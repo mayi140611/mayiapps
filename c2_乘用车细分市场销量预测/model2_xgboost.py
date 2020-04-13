@@ -1,5 +1,7 @@
 """
+4、避免误差传递，试着用一下一等奖的方案
 3、加入'popularity', 'carCommentVolum', 'newsReplyVolum'
+
 2、score： 0.57074112000
 在1的基础上对salesVolume取log，可以看到分数有了显著的提高
 Stopping. Best iteration:
