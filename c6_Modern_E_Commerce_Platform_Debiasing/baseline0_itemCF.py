@@ -46,15 +46,15 @@ user_id_dict, item_id_dict = dict(), dict()
 user_id_dict_inv, item_id_dict_inv = dict(), dict()
 u_cnt, i_cnt = 0, 0
 for line in click_df.itertuples():
-    if line[1] not in user_id_dict:
-        user_id_dict[line[1]] = u_cnt
-        user_id_dict_inv[u_cnt] = line[1]
+    if line.user_id not in user_id_dict:
+        user_id_dict[line.user_id] = u_cnt
+        user_id_dict_inv[u_cnt] = line.user_id
         u_cnt += 1
-    if line[2] not in item_id_dict:
-        item_id_dict[line[2]] = i_cnt
-        item_id_dict_inv[i_cnt] = line[2]
+    if line.item_id not in item_id_dict:
+        item_id_dict[line.item_id] = i_cnt
+        item_id_dict_inv[i_cnt] = line.item_id
         i_cnt += 1
-    train_data_matrix[user_id_dict[line[1]], item_id_dict[line[2]]] += 1
+    train_data_matrix[user_id_dict[line.user_id], item_id_dict[line.item_id]] += 1
 
 print('cal cosine_similarity begin...')    
 tt = [item_id_dict[i] for i in test_click_df.item_id.unique().tolist()]    

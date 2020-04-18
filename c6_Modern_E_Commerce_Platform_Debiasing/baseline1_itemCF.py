@@ -1,5 +1,29 @@
 """
-日期:2020-04-17 16:07:36排名: 无
+日期:2020-04-18 20:54:35排名: 无
+
+score:0.1353
+hitrate_50_full:0.3291
+ndcg_50_full:0.1353
+hitrate_50_half:0.2454
+ndcg_50_half:0.1010
+
+日期:2020-04-18 18:48:13排名: 无 phase2 use_iif=False
+
+score:0.1195
+hitrate_50_full:0.3001
+ndcg_50_full:0.1195
+hitrate_50_half:0.2228
+ndcg_50_half:0.0857
+
+日期:2020-04-18 18:41:10排名: 无 phase2
+
+score:0.1264
+hitrate_50_full:0.3139
+ndcg_50_full:0.1264
+hitrate_50_half:0.2331
+ndcg_50_half:0.0934
+
+日期:2020-04-17 16:07:36排名: 无 phase1
 
 score:0.0841
 hitrate_50_full:0.2068
@@ -42,7 +66,13 @@ pd.set_option('expand_frame_repr', False)  # 当列太多时不自动换行
 
 t0 = time.time()
 
-def get_sim_item(df, user_col, item_col, use_iif=False):  
+def get_sim_item(df, user_col, item_col, use_iif=False): 
+    """
+    use_iif:
+        True: 把用户点击过的item总数考虑进去，
+            如果用户1和用户2都点击了item[1, 2]，但是用户1一共就点击过10个item，而用户2一共点击过10000个item
+            那么在计算item[1, 2]的共现系数时，用户1肯定比用户2的价值大
+    """ 
     user_item_ = df.groupby(user_col)[item_col].agg(set).reset_index()  
     user_item_dict = dict(zip(user_item_[user_col], user_item_[item_col]))  
   
@@ -74,17 +104,25 @@ def recommend(sim_item_corr, user_item_dict, user_id, top_k, item_num):
     """
     rank = {}  
     # 该user_id购买过的items
-    interacted_items = user_item_dict[user_id]  
+#     interacted_items = user_item_dict[user_id]  
+    dft = whole_click[whole_click.user_id == user_id].sort_values('time').drop_duplicates('item_id', keep='last')
+    dft['t'] = range(dft.shape[0], dft.shape[0] * 2)
+    interacted_items = dft['item_id'].tolist()
+    weights = dft['t'].tolist()
+#     print(dft.shape[0], dft.head())
     # 遍历该user购买过的items，
+    cnt = 0
     for i in interacted_items:  
         # 遍历该item共现最高的top_k个item，把其中用户没有买过的加入推荐列表
 #         for j, wij in sorted(sim_item_corr[i].items(), reverse=True)[:top_k]:  
         for j, wij in sorted(sim_item_corr[i].items(), key=lambda d: d[1], reverse=True)[:top_k]:  
             if j not in interacted_items:  
                 rank.setdefault(j, 0)  
-                rank[j] += wij  
+                rank[j] += wij * weights[cnt]
+        cnt += 1
     return sorted(rank.items(), key=lambda d: d[1], reverse=True)[:item_num]  
-  
+
+
 def get_predict(df, pred_col, top_fill):  
     """
     fill user to 50 items
@@ -106,7 +144,7 @@ def get_predict(df, pred_col, top_fill):
     return df  
 
 
-now_phase = 1  
+now_phase = 2  
 train_path = './data_origin/underexpose_train'  
 test_path = './data_origin/underexpose_test'  
 recom_item = []  
