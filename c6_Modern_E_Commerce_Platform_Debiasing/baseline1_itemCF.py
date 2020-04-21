@@ -1,5 +1,13 @@
 """
-日期:2020-04-18 20:54:35排名: 无
+日期:2020-04-19 00:25:12排名: 无  对user点击item按时间做指数加权处理
+
+score:0.1275
+hitrate_50_full:0.3071
+ndcg_50_full:0.1275
+hitrate_50_half:0.2171
+ndcg_50_half:0.0952
+
+日期:2020-04-18 20:54:35排名: 无  对user点击item按时间做线性加权处理
 
 score:0.1353
 hitrate_50_full:0.3291
@@ -106,7 +114,8 @@ def recommend(sim_item_corr, user_item_dict, user_id, top_k, item_num):
     # 该user_id购买过的items
 #     interacted_items = user_item_dict[user_id]  
     dft = whole_click[whole_click.user_id == user_id].sort_values('time').drop_duplicates('item_id', keep='last')
-    dft['t'] = range(dft.shape[0], dft.shape[0] * 2)
+    dft['t'] = list(range(dft.shape[0], dft.shape[0] * 2))
+    dft['t'] = dft['t'] - dft.shape[0]//2 + dft.shape[0]//4
     interacted_items = dft['item_id'].tolist()
     weights = dft['t'].tolist()
 #     print(dft.shape[0], dft.head())
@@ -193,7 +202,7 @@ top50_click = ','.join([str(i) for i in top50_click])
 
 recom_df = pd.DataFrame(recom_item, columns=['user_id', 'item_id', 'sim'])  
 result = get_predict(recom_df, 'sim', top50_click)  
-result.to_csv('/Users/luoyonggui/Downloads/baseline1_itemcf1.csv', index=False, header=None)
+result.to_csv('/Users/luoyonggui/Downloads/baseline1_itemcf3.csv', index=False, header=None)
 
 t1 = time.time()
 print(f'{t1-t0}s')

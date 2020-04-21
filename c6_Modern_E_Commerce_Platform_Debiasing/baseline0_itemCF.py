@@ -1,5 +1,5 @@
 """
-日期:2020-04-13 18:37:27排名: 无
+日期:2020-04-13 18:37:27排名: 无  这么惨，因为有一个很明显的bug。。。
 
 score:0.0006
 hitrate_50_full:0.0030
@@ -34,7 +34,6 @@ click_df = pd.concat([train_click_df, test_click_df], ignore_index=True)
 
 # 删除重复的数据
 click_df = click_df.drop_duplicates()
-click_df.shape
 
 n_users = click_df.user_id.nunique()
 
@@ -68,7 +67,7 @@ from tqdm import tqdm
 
 rdict = dict()
 for i in tqdm(range(dft.shape[1])):
-    rdict[item_id_dict_inv[tt[i]]] = [item_id_dict_inv[i] for i in dft.iloc[i].sort_values(ascending=False).iloc[1:51].index.tolist()]
+    rdict[item_id_dict_inv[tt[i]]] = [item_id_dict_inv[i] for i in dft.iloc[:, i].sort_values(ascending=False).iloc[1:51].index.tolist()]
 
 
 test_click_df = test_click_df.sort_values('time').drop_duplicates('user_id')
