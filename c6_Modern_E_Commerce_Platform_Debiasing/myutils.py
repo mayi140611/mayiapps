@@ -48,8 +48,7 @@ def evaluate_each_phase(predictions: dict, answers: dict):
     hitrate_50_full /= num_cases_full
     ndcg_50_half /= num_cases_half
     hitrate_50_half /= num_cases_half
-    return np.array([ndcg_50_full, ndcg_50_half,
-                     hitrate_50_full, hitrate_50_half], dtype=np.float32)
+    return np.array([hitrate_50_full, ndcg_50_full,hitrate_50_half, ndcg_50_half], dtype=np.float32)
 
 # FYI. You can create a fake answer file for validation based on this. For example,
 # you can mask the latest ONE click made by each user in underexpose_test_click-T.csv,
