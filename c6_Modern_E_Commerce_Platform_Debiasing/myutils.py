@@ -120,8 +120,8 @@ def load_click_data(now_phase, gen_val_set=False):
         test_qtime = test_qtime.append(test_qtime1) 
 
     # 去掉 train中time>query_time的数据    
-    click_train = pd.merge(click_train, test_qtime, how='left').fillna(10)  
-    click_train = click_train[click_train.time <= click_train.query_time]
+#     click_train = pd.merge(click_train, test_qtime, how='left').fillna(10)  
+#     click_train = click_train[click_train.time <= click_train.query_time]
     del click_train['query_time']
     whole_click = click_train.append(click_test)  
     whole_click = whole_click.drop_duplicates()
