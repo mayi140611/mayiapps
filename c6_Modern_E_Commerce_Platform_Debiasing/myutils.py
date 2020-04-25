@@ -99,6 +99,7 @@ def load_click_data(now_phase, gen_val_set=False):
     recom_item = []  
 
     whole_click = pd.DataFrame()  
+    whole_click_val = pd.DataFrame()  # 线下验证集
     click_train = pd.DataFrame()   
     click_test = pd.DataFrame()  
     test_qtime = pd.DataFrame()  
@@ -111,6 +112,7 @@ def load_click_data(now_phase, gen_val_set=False):
             dft = click_test1.sort_values('time').drop_duplicates('user_id', keep='last')
             click_test1 = click_test1[~click_test1.index.isin(dft.index.tolist())]
             dft.to_csv(f'data_gen/underexpose_test_qtime_with_answer-{c}.csv', index=False, header=None)
+            whole_click_val = whole_click_val.append(dft, ignore_index=True)
             del dft
         test_qtime1 = pd.read_csv(test_path + '/underexpose_test_click-{}/underexpose_test_qtime-{}.csv'.format(c, c), header=None,  names=['user_id','query_time'])  
 
@@ -122,8 +124,8 @@ def load_click_data(now_phase, gen_val_set=False):
     # 去掉 train中time>query_time的数据    
 #     click_train = pd.merge(click_train, test_qtime, how='left').fillna(10)  
 #     click_train = click_train[click_train.time <= click_train.query_time]
-    del click_train['query_time']
+#     del click_train['query_time']
     whole_click = click_train.append(click_test)  
     whole_click = whole_click.drop_duplicates()
     whole_click = whole_click.sort_values('time').reset_index(drop=True)
-    return whole_click, click_train, click_test, test_qtime
+    return whole_click, whole_click_val, click_train, click_test, test_qtime
