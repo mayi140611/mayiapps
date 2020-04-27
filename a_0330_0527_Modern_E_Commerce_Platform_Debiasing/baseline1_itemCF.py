@@ -169,7 +169,7 @@ def recommend(sim_item_corr, user_item_dict, user_id, top_k, item_num, weight_mo
     dft = whole_click[whole_click.user_id == user_id].sort_values('time').drop_duplicates('item_id', keep='last')
     if weight_mode=='linear':
         dft['t'] = range(dft.shape[0], dft.shape[0] * 2)
-        dft['t'] = dft['t'] - dft.shape[0] * 2 - dft.shape[0] * 4
+        dft['t'] = dft['t'] - dft.shape[0] // 2 - dft.shape[0] // 4
     elif weight_mode=='exp':
         dft['t'] = ((dft['time'] - 0.9837) * 10000).map(math.exp) # 最大值是最小值的15倍左右，score:0.1275
         
