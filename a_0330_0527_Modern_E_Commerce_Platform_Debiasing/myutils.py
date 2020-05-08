@@ -97,7 +97,7 @@ def load_item_feat():
     train_item_df.iloc[:, -1] = train_item_df.iloc[:, -1].str.replace(']', '').map(float)
     return train_item_df
 
-def load_click_data(now_phase):
+def load_whole_click_data(now_phase):
     """
     gen_val_set = 是否产生线性验证集
     """
